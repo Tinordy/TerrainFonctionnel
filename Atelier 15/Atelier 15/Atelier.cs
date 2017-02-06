@@ -56,7 +56,7 @@ namespace AtelierXNA
             Services.AddService(typeof(RessourcesManager<Texture2D>), new RessourcesManager<Texture2D>(this, "Textures"));
             Services.AddService(typeof(InputManager), GestionInput);
             Services.AddService(typeof(Caméra), CaméraJeu);
-            Services.AddService(typeof(DataPiste), DonnéesPiste);
+            //Services.AddService(typeof(DataPiste), DonnéesPiste);
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
             base.Initialize();
