@@ -21,6 +21,7 @@ namespace AtelierXNA
         Caméra CaméraJeu { get; set; }
         InputManager GestionInput { get; set; }
         DataPiste DonnéesPiste { get; set; }
+        List<Section> ListeSections { get; set; }
 
         public Atelier()
         {
@@ -35,6 +36,7 @@ namespace AtelierXNA
         {
             Vector3 positionCaméra = new Vector3(0, 100, 250);
             Vector3 cibleCaméra = new Vector3(0, 0, -10);
+            ListeSections = new List<Section>();
 
             GestionInput = new InputManager(this);
             Components.Add(GestionInput);
@@ -42,14 +44,22 @@ namespace AtelierXNA
             Components.Add(CaméraJeu);
 
             Components.Add(new Afficheur3D(this));
+            for(int i = 0; i < 2; ++i)
+            {
+                for (int j = 0; j<2; ++j)
+                {
+                    ListeSections.Add(new Section(this, new Vector2(200*i, 100*j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
+                }
+            }
+            foreach(Section s in ListeSections)
+            {
+                Components.Add(s);
+            }
             //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
-            Components.Add(new Section(this, new Vector2(0,0), new Vector2(200,200),1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
-            Components.Add(new Section(this, new Vector2(0, 100), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
-            Components.Add(new Section(this, new Vector2(-200, 0), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(256, 25, 256), "GrandeCarte", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), "CarteTest", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             Components.Add(new AfficheurFPS(this, "Arial20", Color.Red, INTERVALLE_CALCUL_FPS));
-            Components.Add(new Piste(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD, 2000, 2000));
+            //Components.Add(new Piste(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD, 2000, 2000));
 
             //Services.AddService(typeof(Random), new Random());
             Services.AddService(typeof(RessourcesManager<SpriteFont>), new RessourcesManager<SpriteFont>(this, "Fonts"));
@@ -65,6 +75,7 @@ namespace AtelierXNA
         protected override void Update(GameTime gameTime)
         {
             GérerClavier();
+     asdfas
             base.Update(gameTime);
         }
 
