@@ -22,8 +22,8 @@ namespace AtelierXNA
         Texture2D TextureFusion { get; set; }
         Texture2D TextureBase { get; set; }
         Vector3 Origine { get; set; }
-        int NbColonnes { get; set; }
-        int NbRangées { get; set; }
+        public int NbColonnes { get; private set; }
+        public int NbRangées { get; private set; }
         float DeltaX { get; set; }
         float DeltaY { get; set; }
         float DeltaZ { get; set; }
