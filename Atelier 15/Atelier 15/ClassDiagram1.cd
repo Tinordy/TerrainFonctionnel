@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AtelierXNA.Afficheur3D" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAQAQQAAAwAAAAAAAAAAQAAAAAIAAAAAAAAEAAQ=</HashCode>
+      <FileName>Afficheur3D.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.Atelier" Collapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAACAAwAAEAAABBAAAIAAAAIAAAAAAAAAAgA=</HashCode>
+      <FileName>Atelier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.DataPiste" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACCAIAqBABAAAAACgAAEBgAEAAAsACA0AEQACRBAA=</HashCode>
+      <FileName>DataPiste.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.Piste" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAKQQAACAAAAwAACAAAAAAABAAAAISMAAKAAAAAAAQ=</HashCode>
+      <FileName>Piste.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.PrimitiveDeBase" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAYAAECAAIAACEAAAAIAIAAAAAAAAAAQ=</HashCode>
+      <FileName>PrimitiveDeBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.PrimitiveDeBaseAnimée" Collapsed="true">
+    <Position X="1.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAQAACAEQAAAAQCwABQAABEEgAAACIIAAAgCAAQQAAA=</HashCode>
+      <FileName>PrimitiveDeBaseAnimée.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.Program" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AtelierXNA.Section" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAIAAAAAYAgIAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Section.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
