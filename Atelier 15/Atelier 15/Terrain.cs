@@ -9,7 +9,7 @@ namespace AtelierXNA
     {
         const int NB_TRIANGLES_PAR_TUILE = 2;
         const int NB_SOMMETS_PAR_TRIANGLE = 3;
-        const int NB_COLONNES_RANGÉES = 200;
+        const int NB_COLONNES_RANGÉES = 20; // jouer avec les fps 
 
         Vector3 Étendue { get; set; }
 
