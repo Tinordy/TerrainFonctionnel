@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="Afficheur3D.cs" />
     <Compile Include="Atelier.cs" />
+    <Compile Include="Maison.cs" />
     <Compile Include="PrimitiveDeBase.cs" />
     <Compile Include="PrimitiveDeBaseAnimée.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
