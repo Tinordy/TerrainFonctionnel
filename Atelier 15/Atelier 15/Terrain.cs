@@ -9,8 +9,7 @@ namespace AtelierXNA
     {
         const int NB_TRIANGLES_PAR_TUILE = 2;
         const int NB_SOMMETS_PAR_TRIANGLE = 3;
-        const int NB_COLONNES_RANGÉES = 800;
-        const int NB_DIVISIONS = 8;
+        const int NB_COLONNES_RANGÉES = 200;
 
         Vector3 Étendue { get; set; }
 
@@ -58,7 +57,6 @@ namespace AtelierXNA
         public override void Initialize()
         {
             GestionnaireDeTextures = Game.Services.GetService(typeof(RessourcesManager<Texture2D>)) as RessourcesManager<Texture2D>;
-            Sections = new Point[6];
             base.Initialize();
         }
 
@@ -68,8 +66,8 @@ namespace AtelierXNA
         //
         void InitialiserDonnéesCarte()
         {
-            NbColonnes = NB_COLONNES_RANGÉES - 1;
-            NbRangées = NB_COLONNES_RANGÉES - 1;
+            NbColonnes = NB_COLONNES_RANGÉES;
+            NbRangées = NB_COLONNES_RANGÉES;
             DeltaZ = Étendue.Z / NbRangées;
             DeltaX = Étendue.X / NbColonnes;
             DeltaY = Étendue.Y;
@@ -83,16 +81,18 @@ namespace AtelierXNA
         {
             InitialiserDonnéesCarte();
             NbTrianglesDansTerrain = NbColonnes * NB_TRIANGLES_PAR_TUILE * NbRangées;
-            Origine = new Vector3(PositionInitiale.X -Étendue.X / 2, 0, PositionInitiale.Z + Étendue.Z / 2);
+            Origine = new Vector3(Coin.X, 0, Coin.Y);
             DeltaTextureX = (float)1 / NbColonnes;
             DeltaTextureY = (float)1 / NbRangées;
             CréerTableauPoints();
             CréerTableauPointsTexture();
+
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
+
             EffetDeBase = new BasicEffect(GraphicsDevice);
             TextureHerbe = GestionnaireDeTextures.Find(NomsTexturesTerrain[0]);
             TextureSable = GestionnaireDeTextures.Find(NomsTexturesTerrain[1]);
@@ -119,7 +119,7 @@ namespace AtelierXNA
             {
                 for (int col = 0; col < NbColonnes + 1; ++col)
                 {
-                    Points[NbColonnes - col, row] = new Vector3(Origine.X + (NbColonnes - col) * DeltaX,0, Origine.Z - row * DeltaZ);
+                    Points[NbColonnes - col, row] = new Vector3(Origine.X + (NbColonnes - col) * DeltaX, 0, Origine.Z - row * DeltaZ);
                     ++noSommet;
                 }
             }
@@ -144,34 +144,23 @@ namespace AtelierXNA
             }
         }
 
-        //
-        // Création des sommets.
-        // N'oubliez pas qu'il s'agit d'un TriangleList...
-        //
         protected override void InitialiserSommets()
         {
-            for (int j = 0; j < NB_DIVISIONS; ++j)
-            {
-                for (int i = 0; i < NB_DIVISIONS; ++i)
-                {
-                    Sommets = new VertexPositionTexture[NbTrianglesDansTerrain * NB_SOMMETS_PAR_TRIANGLE / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS];
-                }
-            }
-            Normales = new Vector3[NbColonnes, NbRangées];
+            Sommets = new VertexPositionTexture[NbTrianglesDansTerrain * NB_SOMMETS_PAR_TRIANGLE];
             int noSommets = -1;
 
-                for (int cptRow = 0; cptRow < NbColonnes/ NB_DIVISIONS; ++cptRow)
+            for (int cptRow = 0; cptRow < NbColonnes; ++cptRow)
+            {
+                for (int cptCol = 0; cptCol < NbColonnes; ++cptCol)
                 {
-                    for (int cptCol = 0; cptCol < NbColonnes / NB_DIVISIONS; ++cptCol)
-                    {
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow], PointsTexture[cptCol, cptRow]);
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow + 1], PointsTexture[cptCol + 1, cptRow + 1]);
-                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
-                    }
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow], PointsTexture[cptCol, cptRow]);
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow + 1], PointsTexture[cptCol + 1, cptRow + 1]);
+                    Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
                 }
+            }
         }
         public override void Update(GameTime gameTime)
         {
@@ -192,8 +181,9 @@ namespace AtelierXNA
             foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
             {
                 passeEffet.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE/NB_DIVISIONS);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE);
             }
+            base.Draw(gameTime);
         }
     }
 }
