@@ -68,7 +68,7 @@ namespace AtelierXNA
         public bool CheckIfIn(Vector2 position)
         {
             bool value = false;
-            if(position.X <= Étendue.X && position.X >= Position.X && position.Y <= Étendue.Y && position.Y >= Position.Y)
+            if(position.X <= Extrémité.X && position.X >= Position.X && position.Y <= Extrémité.Y && position.Y >= Position.Y)
             {
                 value = true;
             }
@@ -77,13 +77,6 @@ namespace AtelierXNA
         public void AddComponent(GameComponent x)
         {
             Components.Add(x);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            // TODO: Add your update code here
-
-            base.Update(gameTime);
         }
     }
 }
