@@ -15,9 +15,8 @@ namespace AtelierXNA
     /// <summary>
     /// This is a game component that implements IUpdateable.
     /// </summary>
-    public class Section : Microsoft.Xna.Framework.DrawableGameComponent
+    public class Section :Terrain
     {
-        Vector2 Position { get; set; }
         Vector2 Étendue { get; set; }
         Vector2 Extrémité { get; set; }
         double NormeÉtendue { get; set; }
@@ -39,11 +38,11 @@ namespace AtelierXNA
             }
         }
         List<GameComponent> Components { get; set; }
-        public Section(Game game, Vector2 position, Vector2 étendue)
-            : base(game)
+        public Section(Game game, Vector2 Origine, Vector2 étendue2,float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue,
+                       string[] nomsTexturesTerrain, float intervalleMAJ)
+            : base(game, homothétieInitiale, rotationInitiale, positionInitiale, étendue, nomsTexturesTerrain, intervalleMAJ)
         {
-            Position = position;
-            Étendue = étendue;
+            Étendue = étendue2;
         }
 
         public override void Initialize()
