@@ -38,16 +38,16 @@ namespace AtelierXNA
             }
         }
         List<GameComponent> Components { get; set; }
-        public Section(Game game, Vector2 Origine, Vector2 étendue2,float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue,
+        public Section(Game game, Vector2 origine, Vector2 étendue2,float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue,
                        string[] nomsTexturesTerrain, float intervalleMAJ)
-            : base(game, homothétieInitiale, rotationInitiale, positionInitiale, étendue, nomsTexturesTerrain, intervalleMAJ)
+            : base(game, origine,homothétieInitiale, rotationInitiale, positionInitiale, étendue, nomsTexturesTerrain, intervalleMAJ)
         {
             Étendue = étendue2;
         }
 
         public override void Initialize()
         {
-            Extrémité = Position + Étendue;
+            Extrémité = Coin + Étendue;
             NormeÉtendue = Math.Sqrt(Math.Pow(Étendue.X, 2) + Math.Pow(Étendue.Y, 2));
             base.Initialize();
         }
@@ -67,7 +67,7 @@ namespace AtelierXNA
         public bool CheckIfIn(Vector2 position)
         {
             bool value = false;
-            if(position.X <= Extrémité.X && position.X >= Position.X && position.Y <= Extrémité.Y && position.Y >= Position.Y)
+            if(position.X <= Extrémité.X && position.X >= Coin.X && position.Y <= Extrémité.Y && position.Y >= Coin.Y)
             {
                 value = true;
             }

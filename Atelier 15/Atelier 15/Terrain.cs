@@ -33,21 +33,23 @@ namespace AtelierXNA
         Vector3[,] Points { get; set; }
         Vector3[,] Normales { get; set; }
         int NbTrianglesDansTerrain { get; set; }
-        VertexPositionTexture[,][] Sommets { get; set; }
+        VertexPositionTexture[] Sommets { get; set; }
         float DeltaTextureX { get; set; }
         float DeltaTextureY { get; set; }
         Vector3 PositionCaméra { get; set; }
         Vector3 CibleCaméra { get; set; }
+        protected Vector2 Coin { get; private set; }
         Point[] Sections { get; set; }
 
         // à compléter en ajoutant les propriétés qui vous seront nécessaires pour l'implémentation du composant
 
 
-        public Terrain(Game jeu, float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue,
+        public Terrain(Game jeu, Vector2 coin, float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue,
                        string[] nomsTexturesTerrain, float intervalleMAJ)
 
            : base(jeu, homothétieInitiale, rotationInitiale, positionInitiale, intervalleMAJ)
         {
+            Coin = coin;
             Étendue = étendue;
             NomsTexturesTerrain = nomsTexturesTerrain;
 
@@ -152,28 +154,24 @@ namespace AtelierXNA
             {
                 for (int i = 0; i < NB_DIVISIONS; ++i)
                 {
-                    Sommets[i, i] = new VertexPositionTexture[NbTrianglesDansTerrain * NB_SOMMETS_PAR_TRIANGLE / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS];
+                    Sommets = new VertexPositionTexture[NbTrianglesDansTerrain * NB_SOMMETS_PAR_TRIANGLE / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS];
                 }
             }
             Normales = new Vector3[NbColonnes, NbRangées];
             int noSommets = -1;
 
-            for (int cptSectionX = 0; cptSectionX < NB_DIVISIONS; ++cptSectionX)
-            {
-                for(int cptSectionY=0;cptSectionY < NB_DIVISIONS; ++cptSectionY)
-                for (int cptRow = cptSectionY * NB_DIVISIONS; cptRow < NbColonnes / NB_DIVISIONS * cptSectionY; ++cptRow)
+                for (int cptRow = 0; cptRow < NbColonnes/ NB_DIVISIONS; ++cptRow)
                 {
-                    for (int cptCol = cptSectionX * NB_DIVISIONS; cptCol < NbColonnes / NB_DIVISIONS * cptSectionX; ++cptCol)
+                    for (int cptCol = 0; cptCol < NbColonnes / NB_DIVISIONS; ++cptCol)
                     {
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow], PointsTexture[cptCol, cptRow]);
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow + 1], PointsTexture[cptCol + 1, cptRow + 1]);
-                        Sommets[cptSectionX, cptSectionY][++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow], PointsTexture[cptCol, cptRow]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol, cptRow + 1], PointsTexture[cptCol, cptRow + 1]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow + 1], PointsTexture[cptCol + 1, cptRow + 1]);
+                        Sommets[++noSommets] = new VertexPositionTexture(Points[cptCol + 1, cptRow], PointsTexture[cptCol + 1, cptRow]);
                     }
                 }
-            }
         }
         public override void Update(GameTime gameTime)
         {
@@ -181,18 +179,9 @@ namespace AtelierXNA
             TempsÉcouléDepuisMAJ += TempsÉcoulé;
             if (TempsÉcouléDepuisMAJ >= IntervalleMAJ)
             {
-                EffectuerMiseÀJour();
                 TempsÉcouléDepuisMAJ = 0;
             }
             base.Update(gameTime);
-        }
-
-        void EffectuerMiseÀJour()
-        {
-            PositionCaméra = CaméraJeu.Position;
-            CibleCaméra = CaméraJeu.Cible;
-            Sections[0] = new Point((int)(PositionCaméra.X / NB_DIVISIONS), (int)(PositionCaméra.Y / NB_DIVISIONS));
-            Sections[1] = new Point()
         }
 
         public override void Draw(GameTime gameTime)
@@ -203,13 +192,7 @@ namespace AtelierXNA
             foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
             {
                 passeEffet.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[0].X,Sections[0].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE/NB_DIVISIONS);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[1].X, Sections[1].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE/NB_DIVISIONS);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[2].X, Sections[2].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE/NB_DIVISIONS);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[3].X, Sections[3].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[4].X, Sections[4].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets[Sections[5].X, Sections[5].Y], 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE / NB_DIVISIONS);
-
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE/NB_DIVISIONS);
             }
         }
     }
