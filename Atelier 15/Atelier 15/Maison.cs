@@ -12,6 +12,7 @@ namespace AtelierXNA
         const int NB_TRIANGLES_MURS = 8;
         const int NB_SOMMETS_PAR_TRIANGLE = 3;
         const int NB_TRIANGLES_TOIT = 4;
+
         int NbSommetsMurs { get; set; }
         int NbSommetsToit { get; set; }
         Vector3 Origine { get; set; }
@@ -28,11 +29,12 @@ namespace AtelierXNA
         RessourcesManager<Texture2D> gestionnaireDeTextures;
         protected BasicEffect EffetDeBase { get; private set; }
 
-        public Maison(Game jeu, float échelleInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, float rayon, Vector2 charpente, string nomTexture, float intervalleMAJ)
+        public Maison(Game jeu, float échelleInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue, string nomTextureMurs, string nomTextureToit, float intervalleMAJ)
     : base(jeu, échelleInitiale, rotationInitiale, positionInitiale, intervalleMAJ)
         {
-            NomTextureMurs = nomTexture;
-            Étendue = new Vector3(rayon, rayon, rayon);
+            NomTextureMurs = nomTextureMurs;
+            NomTextureToit = nomTextureToit;
+            Étendue = étendue;
             Origine = new Vector3(-Étendue.X / 2, 0, Étendue.Z / 2);//sur le sol
         }
         public override void Initialize()
@@ -49,6 +51,7 @@ namespace AtelierXNA
             EffetDeBase = new BasicEffect(GraphicsDevice);
             gestionnaireDeTextures = Game.Services.GetService(typeof(RessourcesManager<Texture2D>)) as RessourcesManager<Texture2D>;
             TextureMurs = gestionnaireDeTextures.Find(NomTextureMurs);
+            TextureToit = gestionnaireDeTextures.Find(NomTextureToit);
             InitialiserParamètresEffetDeBase();
             base.LoadContent();
         }
@@ -62,8 +65,11 @@ namespace AtelierXNA
             EffetDeBase.Projection = CaméraJeu.Projection;
             foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
             {
+                EffetDeBase.Texture = TextureMurs;
                 passeEffet.Apply();
                 GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleStrip, SommetsMurs, 0, NB_TRIANGLES_MURS);
+                EffetDeBase.Texture = TextureToit;
+                passeEffet.Apply();
                 GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, SommetsToit, 0, NB_TRIANGLES_TOIT);
             }
             base.Draw(gameTime);
@@ -86,7 +92,7 @@ namespace AtelierXNA
             }
             //points toit
             PtsTextureToit[0] = new Vector2(0, 1);
-            PtsTextureToit[1] = new Vector2(1f / 2, 0);
+            PtsTextureToit[1] = new Vector2(0.5f, 0);
             PtsTextureToit[2] = new Vector2(1, 1);
         }
         protected override void InitialiserSommets()
@@ -100,27 +106,29 @@ namespace AtelierXNA
                 SommetsMurs[i] = new VertexPositionTexture(new Vector3(Origine.X + (1 - i / 6) * Étendue.X, Origine.Y + (i % 2) * Étendue.Y, Origine.Z - (i / 4) % 2 * Étendue.Z), PtsTextureMurs[i]);
                 ++i;
             }
-            //sommets toit
             i = 0;
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X, Origine.Y + Étendue.Y, Origine.Z - Étendue.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X, Origine.Y + Étendue.Y, Origine.Z - Étendue.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z - Étendue.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z - Étendue.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureToit[i % 3]);
-            SommetsToit[i++] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
 
+         //sommets toit
+         SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureMurs[i % 3]);
+         i++;
+         while (i < NbSommetsToit)
+         {
+            if ((i - 1) % 3 == 0)
+            {
+               SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
+            }
+            else
+            {
+               SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + (1-(i/8)) * Étendue.X, Origine.Y + Étendue.Y, Origine.Z - ((i/5)%2) * Étendue.Z), PtsTextureToit[i % 3]);
 
-        }
+            }
+            i++;
+         }
+      }
         private void InitialiserParamètresEffetDeBase()
         {
             EffetDeBase.TextureEnabled = true;
-            EffetDeBase.Texture = TextureMurs;
+            //EffetDeBase.Texture = TextureMurs;
             GestionAlpha = BlendState.AlphaBlend;
         }
     }
