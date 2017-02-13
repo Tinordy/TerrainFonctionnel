@@ -75,7 +75,6 @@ namespace AtelierXNA
         protected override void Update(GameTime gameTime)
         {
             GérerClavier();
-     asdfas
             base.Update(gameTime);
         }
 

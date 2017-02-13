@@ -9,7 +9,7 @@ namespace AtelierXNA
     {
         const int NB_TRIANGLES_PAR_TUILE = 2;
         const int NB_SOMMETS_PAR_TRIANGLE = 3;
-        const int NB_COLONNES_RANGÉES = 20; // jouer avec les fps 
+        const int NB_COLONNES_RANGÉES = 200; // jouer avec les fps 
 
         Vector3 Étendue { get; set; }
 
@@ -39,6 +39,8 @@ namespace AtelierXNA
         Vector3 CibleCaméra { get; set; }
         protected Vector2 Coin { get; private set; }
         Point[] Sections { get; set; }
+        BoundingSphere SphereDeCollision { get; set; }
+        bool EnableDraw { get; set; }
 
         // à compléter en ajoutant les propriétés qui vous seront nécessaires pour l'implémentation du composant
 
@@ -58,6 +60,7 @@ namespace AtelierXNA
         {
             GestionnaireDeTextures = Game.Services.GetService(typeof(RessourcesManager<Texture2D>)) as RessourcesManager<Texture2D>;
             base.Initialize();
+            SphereDeCollision = new BoundingSphere(new Vector3(Coin.X,0,Coin.Y), Étendue.X);
         }
 
         //
@@ -143,6 +146,17 @@ namespace AtelierXNA
                 }
             }
         }
+        void GérerVisibilité()
+        {
+            if(CaméraJeu.Frustum.Intersects(SphereDeCollision))
+            {
+                EnableDraw = true;
+            }
+            else
+            {
+                EnableDraw = false;
+            }
+        }
 
         protected override void InitialiserSommets()
         {
@@ -168,6 +182,7 @@ namespace AtelierXNA
             TempsÉcouléDepuisMAJ += TempsÉcoulé;
             if (TempsÉcouléDepuisMAJ >= IntervalleMAJ)
             {
+                GérerVisibilité();
                 TempsÉcouléDepuisMAJ = 0;
             }
             base.Update(gameTime);
@@ -175,15 +190,18 @@ namespace AtelierXNA
 
         public override void Draw(GameTime gameTime)
         {
-            EffetDeBase.World = GetMonde();
-            EffetDeBase.View = CaméraJeu.Vue;
-            EffetDeBase.Projection = CaméraJeu.Projection;
-            foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
+            if (EnableDraw)
             {
-                passeEffet.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE);
+                EffetDeBase.World = GetMonde();
+                EffetDeBase.View = CaméraJeu.Vue;
+                EffetDeBase.Projection = CaméraJeu.Projection;
+                foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
+                {
+                    passeEffet.Apply();
+                    GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE);
+                }
+                base.Draw(gameTime);
             }
-            base.Draw(gameTime);
         }
     }
 }
