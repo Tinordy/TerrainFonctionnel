@@ -34,8 +34,8 @@ namespace AtelierXNA
 
         protected override void Initialize()
         {
-            Vector3 positionCaméra = new Vector3(0, 100, 250);
-            Vector3 cibleCaméra = new Vector3(0, 0, -10);
+            Vector3 positionCaméra = new Vector3(200, 10, 200);
+            Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
 
             GestionInput = new InputManager(this);
@@ -44,9 +44,9 @@ namespace AtelierXNA
             Components.Add(CaméraJeu);
 
             Components.Add(new Afficheur3D(this));
-            for(int i = 0; i < 20; ++i)
+            for(int i = 0; i < 50; ++i)
             {
-                for (int j = 0; j<20; ++j)
+                for (int j = 0; j<50; ++j)
                 {
                     ListeSections.Add(new Section(this, new Vector2(200*i, 100*j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
                 }
