@@ -44,9 +44,9 @@ namespace AtelierXNA
             Components.Add(CaméraJeu);
 
             Components.Add(new Afficheur3D(this));
-            for(int i = 0; i < 2; ++i)
+            for(int i = 0; i < 20; ++i)
             {
-                for (int j = 0; j<2; ++j)
+                for (int j = 0; j<20; ++j)
                 {
                     ListeSections.Add(new Section(this, new Vector2(200*i, 100*j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
                 }
