@@ -95,6 +95,6 @@ namespace AtelierXNA
                 GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, Sommets, 0, NbDeTriangles);
             }
             GraphicsDevice.DepthStencilState = ancienDepthStencilState;
-        }
+      }
     }
 }
