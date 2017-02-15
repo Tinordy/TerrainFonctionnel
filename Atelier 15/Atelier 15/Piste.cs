@@ -20,10 +20,12 @@ namespace AtelierXNA
         Vector3 Origine { get; set; }
         List<Vector2> PointsBordureExt { get; set; }
         List<Vector2> PointsBordureInt { get; set; }
+        List<Vector2> PointsCentraux { get; set; }
         Color CouleurPiste { get; set; }
         int NbDeTriangles { get; set; }
         int NbDeSommets { get; set; }
         VertexPositionColor[] Sommets { get; set; }
+        VertexPositionColor[] SommetsPointillés { get; set; }
         BasicEffect EffetDeBase { get; set; }
         int NbColonnes { get; set; }
         int NbRangées { get; set; }
@@ -37,7 +39,7 @@ namespace AtelierXNA
         {
             Origine = new Vector3(-NbColonnes / 2, 25, -NbRangées / 2);
             DonnéesPiste = Game.Services.GetService(typeof(DataPiste)) as DataPiste;
-            CouleurPiste = Color.Black;
+            CouleurPiste = Color.DarkGray;
             ObtenirDonnéesPiste();
             NbDeSommets = PointsBordureExt.Count + PointsBordureInt.Count + 2;
             NbDeTriangles = NbDeSommets - 2;
@@ -47,6 +49,7 @@ namespace AtelierXNA
         void CréerTableauSommets()
         {
             Sommets = new VertexPositionColor[NbDeSommets];
+            SommetsPointillés = new VertexPositionColor[NbDeSommets];
         }
         protected override void InitialiserSommets()
         {
@@ -75,6 +78,7 @@ namespace AtelierXNA
         {
             PointsBordureExt = DonnéesPiste.GetBordureExtérieure();
             PointsBordureInt = DonnéesPiste.GetBordureIntérieur();
+            PointsCentraux = DonnéesPiste.GetPointsCentraux();
         }
         void InitialiserParamètresEffetDeBase()
         {
