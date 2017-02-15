@@ -39,7 +39,7 @@ namespace AtelierXNA
         Vector3 CibleCaméra { get; set; }
         protected Vector2 Coin { get; private set; }
         Point[] Sections { get; set; }
-        BoundingSphere SphereDeCollision { get; set; }
+        public BoundingSphere SphereDeCollision { get; private set; }
         bool EnableDraw { get; set; }
 
         // à compléter en ajoutant les propriétés qui vous seront nécessaires pour l'implémentation du composant
@@ -60,7 +60,7 @@ namespace AtelierXNA
         {
             GestionnaireDeTextures = Game.Services.GetService(typeof(RessourcesManager<Texture2D>)) as RessourcesManager<Texture2D>;
             base.Initialize();
-            SphereDeCollision = new BoundingSphere(new Vector3(Coin.X,0,Coin.Y), Étendue.X);
+            SphereDeCollision = new BoundingSphere(new Vector3(Coin.X + DeltaX, 0, Coin.Y - DeltaZ), DeltaX);
         }
 
         //
@@ -148,7 +148,7 @@ namespace AtelierXNA
         }
         void GérerVisibilité()
         {
-            if(CaméraJeu.Frustum.Intersects(SphereDeCollision))
+            if (CaméraJeu.Frustum.Intersects(SphereDeCollision))
             {
                 EnableDraw = true;
             }
@@ -190,18 +190,15 @@ namespace AtelierXNA
 
         public override void Draw(GameTime gameTime)
         {
-            if (EnableDraw)
+            EffetDeBase.World = GetMonde();
+            EffetDeBase.View = CaméraJeu.Vue;
+            EffetDeBase.Projection = CaméraJeu.Projection;
+            foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
             {
-                EffetDeBase.World = GetMonde();
-                EffetDeBase.View = CaméraJeu.Vue;
-                EffetDeBase.Projection = CaméraJeu.Projection;
-                foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
-                {
-                    passeEffet.Apply();
-                    GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE);
-                }
-                base.Draw(gameTime);
+                passeEffet.Apply();
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, Sommets, 0, NbTrianglesDansTerrain / NB_TRIANGLES_PAR_TUILE);
             }
+            base.Draw(gameTime);
         }
     }
 }

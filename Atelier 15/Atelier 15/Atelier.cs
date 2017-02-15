@@ -17,11 +17,12 @@ namespace AtelierXNA
         const float INTERVALLE_MAJ_STANDARD = 1f / 60f;
         GraphicsDeviceManager PériphériqueGraphique { get; set; }
         SpriteBatch GestionSprites { get; set; }
-
+        List<Section> Sections { get; set; }
         Caméra CaméraJeu { get; set; }
         InputManager GestionInput { get; set; }
         //DataPiste DonnéesPiste { get; set; }
         List<Section> ListeSections { get; set; }
+        float TempsÉcouléDepuisMAJ { get; set; }
 
         public Atelier()
         {
@@ -42,16 +43,18 @@ namespace AtelierXNA
             Components.Add(GestionInput);
             CaméraJeu = new CaméraSubjective(this, positionCaméra, cibleCaméra, Vector3.Up, INTERVALLE_MAJ_STANDARD);
             Components.Add(CaméraJeu);
-
+            Sections = new List<Section>();
             Components.Add(new Afficheur3D(this));
-            for(int i = 0; i < 50; ++i)
+            for (int i = 0; i < 10; ++i)
             {
-                for (int j = 0; j<50; ++j)
+                for (int j = 0; j < 10; ++j)
                 {
-                    ListeSections.Add(new Section(this, new Vector2(200*i, 100*j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD));
+                    Section newSection = new Section(this, new Vector2(200 * i, 100 * j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD);
+                    Sections.Add(newSection);
+                    ListeSections.Add(newSection);
                 }
             }
-            foreach(Section s in ListeSections)
+            foreach (Section s in ListeSections)
             {
                 Components.Add(s);
             }
@@ -75,6 +78,27 @@ namespace AtelierXNA
         protected override void Update(GameTime gameTime)
         {
             GérerClavier();
+            float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            TempsÉcouléDepuisMAJ += TempsÉcoulé;
+            if (TempsÉcouléDepuisMAJ >= INTERVALLE_MAJ_STANDARD)
+            {
+                foreach (Section s in Sections)
+                {
+                    if (CaméraJeu.Frustum.Intersects(s.SphereDeCollision))
+                    {
+                        if (CaméraJeu.Position.X - s.SphereDeCollision.Center.X < 20f && CaméraJeu.Position.Y 
+                            -s.SphereDeCollision.Center.Y < 20f)
+                        {
+                            s.Enabled = true;
+                        }
+                    }
+                    else
+                    {
+                        s.Enabled = false;
+                    }
+                }
+                TempsÉcouléDepuisMAJ = 0;
+            }
             base.Update(gameTime);
         }
 

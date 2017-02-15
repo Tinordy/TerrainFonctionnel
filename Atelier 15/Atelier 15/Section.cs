@@ -52,27 +52,6 @@ namespace AtelierXNA
             base.Initialize();
         }
 
-        public void IsItIn(Vector2 position, Vector2 direction)
-        {
-            if (CheckIfIn(position) || CheckIfIn(position + direction))
-            {
-                EstVisible = true;
-            }
-            else
-            {
-                EstVisible = false;
-            }
-        }
-
-        public bool CheckIfIn(Vector2 position)
-        {
-            bool value = false;
-            if(position.X <= Extrémité.X && position.X >= Coin.X && position.Y <= Extrémité.Y && position.Y >= Coin.Y)
-            {
-                value = true;
-            }
-            return value;
-        }
         public void AddComponent(GameComponent x)
         {
             Components.Add(x);
