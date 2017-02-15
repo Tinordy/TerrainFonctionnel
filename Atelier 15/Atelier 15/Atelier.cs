@@ -84,7 +84,8 @@ namespace AtelierXNA
             {
                 foreach (Section s in Sections)
                 {
-                    if (CaméraJeu.Frustum.Intersects(s.SphereDeCollision))
+                    BoundingFrustum boundFrustum = new BoundingFrustum(Matrix.Multiply(CaméraJeu.Vue,CaméraJeu.Projection));
+                    if (boundFrustum.Intersects(s.SphereDeCollision))
                     {
                         if (CaméraJeu.Position.X - s.SphereDeCollision.Center.X < 20f && CaméraJeu.Position.Y 
                             -s.SphereDeCollision.Center.Y < 20f)
