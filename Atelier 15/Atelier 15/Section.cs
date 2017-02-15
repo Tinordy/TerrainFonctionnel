@@ -26,15 +26,8 @@ namespace AtelierXNA
             get { return estVisible;}
             set
             {
-                bool tampon = estVisible;
-                estVisible = value;
-                if(tampon != estVisible)
-                {
-                    foreach (GameComponent x in Components)
-                    {
-                        x.Enabled = !x.Enabled;
-                    }
-                }
+                Enabled = value;
+                
             }
         }
         List<GameComponent> Components { get; set; }

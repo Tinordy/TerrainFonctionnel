@@ -45,6 +45,7 @@ namespace AtelierXNA
             Components.Add(CaméraJeu);
             Sections = new List<Section>();
             Components.Add(new Afficheur3D(this));
+            //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
             for (int i = 0; i < 10; ++i)
             {
                 for (int j = 0; j < 10; ++j)
@@ -58,7 +59,7 @@ namespace AtelierXNA
             {
                 Components.Add(s);
             }
-            //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
+            
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(256, 25, 256), "GrandeCarte", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), "CarteTest", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             Components.Add(new AfficheurFPS(this, "Arial20", Color.Red, INTERVALLE_CALCUL_FPS));
@@ -77,6 +78,7 @@ namespace AtelierXNA
 
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
             GérerClavier();
             float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
             TempsÉcouléDepuisMAJ += TempsÉcoulé;
@@ -85,22 +87,26 @@ namespace AtelierXNA
                 foreach (Section s in Sections)
                 {
                     BoundingFrustum boundFrustum = new BoundingFrustum(Matrix.Multiply(CaméraJeu.Vue,CaméraJeu.Projection));
-                    if (boundFrustum.Intersects(s.SphereDeCollision))
+                    if (CaméraJeu.Frustum.Intersects(s.SphereDeCollision))
                     {
-                        if (CaméraJeu.Position.X - s.SphereDeCollision.Center.X < 20f && CaméraJeu.Position.Y 
-                            -s.SphereDeCollision.Center.Y < 20f)
+                        if (CaméraJeu.Position.X - s.SphereDeCollision.Center.X < 20f || CaméraJeu.Position.Z 
+                            -s.SphereDeCollision.Center.Z < 20f)
                         {
-                            s.Enabled = true;
+                            s.EstVisible = true;
+                        }
+                        else
+                        {
+                            s.EstVisible = false;
                         }
                     }
                     else
                     {
-                        s.Enabled = false;
+                        s.EstVisible = false;
                     }
                 }
                 TempsÉcouléDepuisMAJ = 0;
             }
-            base.Update(gameTime);
+            
         }
 
         private void GérerClavier()
