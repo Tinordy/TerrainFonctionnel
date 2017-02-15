@@ -15,7 +15,7 @@ namespace AtelierXNA
     public class Piste : PrimitiveDeBaseAnimée
     {
         DataPiste DonnéesPiste { get; set; }
-        int HAUTEUR_INITIALE = 0;
+        int HAUTEUR_INITIALE = 1;
 
         Vector3 Origine { get; set; }
         List<Vector2> PointsBordureExt { get; set; }
@@ -35,7 +35,7 @@ namespace AtelierXNA
         }
         public override void Initialize()
         {
-            Origine = new Vector3(-NbColonnes / 2, 0, -NbRangées / 2);
+            Origine = new Vector3(-NbColonnes / 2, 25, -NbRangées / 2);
             DonnéesPiste = Game.Services.GetService(typeof(DataPiste)) as DataPiste;
             CouleurPiste = Color.Black;
             ObtenirDonnéesPiste();
