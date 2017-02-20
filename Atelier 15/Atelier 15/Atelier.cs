@@ -46,9 +46,9 @@ namespace AtelierXNA
             Sections = new List<Section>();
             Components.Add(new Afficheur3D(this));
             //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
-            for (int i = 0; i < 10; ++i)
+            for (int i = 0; i < 2; ++i)
             {
-                for (int j = 0; j < 10; ++j)
+                for (int j = 0; j < 2; ++j)
                 {
                     Section newSection = new Section(this, new Vector2(200 * i, 100 * j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD);
                     Sections.Add(newSection);
