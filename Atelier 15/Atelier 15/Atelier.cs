@@ -110,6 +110,7 @@ namespace AtelierXNA
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
             Components.Add(player);
+            player.nullité = false;
             base.Initialize();
         }
 
