@@ -35,9 +35,10 @@ namespace AtelierXNA
         int PORT = 5001;
         int BUFFER_SIZE = 2048;
         byte[] readBuffer;
-        MemoryStream readStream;
+        MemoryStream readStream, writeStream;
 
         BinaryReader reader;
+        BinaryWriter writer;
 
         Maison player;
         Maison enemy;
@@ -65,8 +66,10 @@ namespace AtelierXNA
             client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
 
             readStream = new MemoryStream();
+            writeStream = new MemoryStream();
 
             reader = new BinaryReader(readStream);
+            writer = new BinaryWriter(writeStream);
 
             //
             //joueur 
@@ -110,7 +113,6 @@ namespace AtelierXNA
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
             Components.Add(player);
-            player.Enabled = false;
             base.Initialize();
         }
 
@@ -205,6 +207,11 @@ namespace AtelierXNA
                     string ip = reader.ReadString();
                     enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0,0,5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                     Components.Add(enemy);
+
+                    writeStream.Position = 0;
+                    writer.Write("Hello World!");
+                    SendData(GetDataFromMemoryStream(writeStream));
+
                 }
                 else
                 {
@@ -221,6 +228,35 @@ namespace AtelierXNA
             }
         }
 
+        private byte[] GetDataFromMemoryStream(MemoryStream ms)
+        {
+            byte[] result;
+            lock (ms)
+            {
+                int bytesWritten = (int)ms.Position;
+                result = new byte[bytesWritten];
+
+                ms.Position = 0;
+                ms.Read(result, 0, bytesWritten);
+            }
+
+            return result;
+        }
+
+        public void SendData(byte[] b)
+        {
+            try
+            {
+                lock (client.GetStream())
+                {
+                    client.GetStream().BeginWrite(b, 0, b.Length, null, null);
+                }
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
         private void GérerClavier()
         {
             if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.Escape))
