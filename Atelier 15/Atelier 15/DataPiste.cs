@@ -17,7 +17,7 @@ namespace AtelierXNA
         const char ESPACE = ' ';
         const char TAB = '\t';
         const float ÉCHELLE = 2;
-        const int LARGEUR_POINTILLÉ = 1;
+
 
         List<float[]> CoefficientsX { get; set; }
         List<float[]> CoefficientsY { get; set; }
@@ -26,9 +26,11 @@ namespace AtelierXNA
         List<Vector2> PointsBordureInt { get; set; }
         List<Vector2> PointsCentraux { get; set; }
         List<Vector2> PointsDePatrouille { get; set; }
+        List<Vector2> PointsPointillés { get; set; }
         float IncrémentX { get; set; }
         string SplineX { get; set; }
         string SplineY { get; set; }
+        float LargeurPointillée { get; set; }
         public Vector2 PositionAvatar
         {
             get
@@ -87,6 +89,21 @@ namespace AtelierXNA
                     PointsCentraux.Add(ÉCHELLE * new Vector2(Spline(CoefficientsX[i], i + (float)cpt / NB_PTS_INTERMÉDIAIRES), Spline(CoefficientsY[i], i + (float)cpt / NB_PTS_INTERMÉDIAIRES)));
                 }
             }
+
+            
+        }
+        void CalculerPointsPointillés()
+        {
+            PointsPointillés = new List<Vector2>();
+            LargeurPointillée = LARGEUR_PISTE / 5f;
+
+            for(int i = 0; i < PointsCentraux.Count; ++i)
+            {
+                Vector2 vecteurTemp = PointsBordureExt[i] - PointsCentraux[i];
+                Vector2 vecteurNormalized = Vector2.Normalize(vecteurTemp);
+                PointsPointillés.Add(PointsCentraux[i] + LargeurPointillée * (vecteurNormalized));
+                PointsPointillés.Add(PointsCentraux[i] - LargeurPointillée * (vecteurNormalized));
+            }
         }
         float Spline(float[] tab, float t)
         {
@@ -94,6 +111,7 @@ namespace AtelierXNA
         }
         void CalculerPointsDePatrouille()
         {
+
             PointsDePatrouille = new List<Vector2>();
             for (int cpt = 0; cpt < CoefficientsX.Count; ++cpt)
             {
@@ -101,7 +119,6 @@ namespace AtelierXNA
                 {
                     PointsDePatrouille.Add(PointsCentraux[INTERVALLE_POINTS_PATROUILLE * cpt2 + NB_PTS_INTERMÉDIAIRES * cpt]);
                 }
-
             }
         }
         void CalculerBordures()
@@ -115,11 +132,16 @@ namespace AtelierXNA
                 PointsBordureExt.Add(PointsCentraux[cpt] + new Vector2(-vDirecteur.Y, vDirecteur.X));
                 PointsBordureInt.Add(PointsCentraux[cpt] + new Vector2(vDirecteur.Y, -vDirecteur.X));
             }
+            CalculerPointsPointillés();
         }
 
         public List<Vector2> GetPointsCentraux()
         {
             return CopierListeVecteur2(PointsCentraux);
+        }
+        public List<Vector2> GetPointsPointillés()
+        {
+            return CopierListeVecteur2(PointsPointillés);
         }
 
         public List<Vector2> GetBordureExtérieure()
