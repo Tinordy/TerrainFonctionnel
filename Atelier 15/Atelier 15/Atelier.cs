@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.Net.Sockets;
+using System.Net;
+using System.IO;
+using System.Windows.Forms;
 
 namespace AtelierXNA
 {
@@ -23,7 +27,22 @@ namespace AtelierXNA
         //DataPiste DonnéesPiste { get; set; }
         List<Section> ListeSections { get; set; }
         float TempsÉcouléDepuisMAJ { get; set; }
+        TcpClient client;
 
+        // server related properties
+
+        string IP = "127.0.0.1";
+        int PORT = 5001;
+        int BUFFER_SIZE = 2048;
+        byte[] readBuffer;
+        MemoryStream readStream;
+
+        BinaryReader reader;
+
+        GameplayObject player;
+        GameplayObject ennemy;
+
+        //
         public Atelier()
         {
             PériphériqueGraphique = new GraphicsDeviceManager(this);
@@ -31,14 +50,32 @@ namespace AtelierXNA
             PériphériqueGraphique.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
             IsMouseVisible = true;
+            
         }
 
         protected override void Initialize()
         {
+            //serveur 
+
+            client = new TcpClient();
+            client.NoDelay = true;
+            client.Connect(IP, PORT);
+
+            readBuffer = new byte[BUFFER_SIZE];
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+
+            readStream = new MemoryStream();
+
+            reader = new BinaryReader(readStream);
+
+            //
+            //joueur 
+
+            player = new GameplayObject();
+
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
-
             GestionInput = new InputManager(this);
             Components.Add(GestionInput);
             CaméraJeu = new CaméraSubjective(this, positionCaméra, cibleCaméra, Vector3.Up, INTERVALLE_MAJ_STANDARD);
@@ -46,24 +83,24 @@ namespace AtelierXNA
             Sections = new List<Section>();
             Components.Add(new Afficheur3D(this));
             //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
-            for (int i = 0; i < 10; ++i)
-            {
-                for (int j = 0; j < 10; ++j)
-                {
-                    Section newSection = new Section(this, new Vector2(200 * i, 100 * j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD);
-                    Sections.Add(newSection);
-                    ListeSections.Add(newSection);
-                }
-            }
-            foreach (Section s in ListeSections)
-            {
-                Components.Add(s);
-            }
+            //for (int i = 0; i < 2; ++i)
+            //{
+            //    for (int j = 0; j < 2; ++j)
+            //    {
+            //        Section newSection = new Section(this, new Vector2(200 * i, 100 * j), new Vector2(200, 200), 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), new string[] { "Herbe", "Sable" }, INTERVALLE_MAJ_STANDARD);
+            //        Sections.Add(newSection);
+            //        ListeSections.Add(newSection);
+            //    }
+            //}
+            //foreach (Section s in ListeSections)
+            //{
+            //    Components.Add(s);
+            //}
             
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(256, 25, 256), "GrandeCarte", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             //Components.Add(new Terrain(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(200, 25, 200), "CarteTest", "DétailsTerrain", 5, INTERVALLE_MAJ_STANDARD));
             Components.Add(new AfficheurFPS(this, "Arial20", Color.Red, INTERVALLE_CALCUL_FPS));
-            Components.Add(new Piste(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD, 20000, 20000));
+            //Components.Add(new Piste(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD, 20000, 20000));
 
             //Services.AddService(typeof(Random), new Random());
             Services.AddService(typeof(RessourcesManager<SpriteFont>), new RessourcesManager<SpriteFont>(this, "Fonts"));
@@ -74,6 +111,12 @@ namespace AtelierXNA
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
             base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -109,9 +152,77 @@ namespace AtelierXNA
             
         }
 
+        void StreamReceived(IAsyncResult ar)
+        {
+            int bytesRead = 0;
+
+            try
+            {
+                lock(client.GetStream())
+                {
+                    bytesRead = client.GetStream().EndRead(ar);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            if(bytesRead == 0)
+            {
+                client.Close();
+                return;
+            }
+
+            byte[] data = new byte[bytesRead];
+
+            for (int cpt = 0; cpt < bytesRead; cpt++)
+                data[cpt] = readBuffer[cpt];
+
+            ProcessData(data);
+            
+
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+        }
+
+        private void ProcessData(byte[] data)
+        {
+            readStream.SetLength(0);
+            readStream.Position = 0;
+            readStream.Write(data, 0, data.Length);
+            readStream.Position = 0;
+
+            Protocoles p;
+
+            try
+            {
+                p = (Protocoles)reader.ReadByte();
+
+                if (p == Protocoles.Connected)
+                {
+                    byte id = reader.ReadByte();
+                    string ip = reader.ReadString();
+                    MessageBox.Show(String.Format("Player has connected : {0}   The IP address is: {1}", id,ip));
+                }
+                else
+                {
+                    if (p == Protocoles.Disconnected)
+                    {
+                        byte id = reader.ReadByte();
+                        string ip = reader.ReadString();
+                        MessageBox.Show(String.Format("PLayer has disconnected: {0}  The IP address is: {1}",id, ip));
+                    }
+                }
+            }
+            catch(Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+        }
+
         private void GérerClavier()
         {
-            if (GestionInput.EstEnfoncée(Keys.Escape))
+            if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 Exit();
             }
