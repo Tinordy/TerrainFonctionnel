@@ -116,13 +116,14 @@ namespace AtelierXNA
 
         protected override void LoadContent()
         {
+            base.LoadContent();
             client = new TcpClient();
             client.NoDelay = true;
             client.Connect(IP, PORT);
 
             readBuffer = new byte[BUFFER_SIZE];
             client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
-            base.LoadContent();
+            
         }
 
         void UpdateLan(GameTime gameTime)
@@ -176,7 +177,7 @@ namespace AtelierXNA
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "1");
             }
 
             if (bytesRead == 0)
@@ -193,7 +194,7 @@ namespace AtelierXNA
             ProcessData(data);
 
 
-            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+            //client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
         }
 
         private void ProcessData(byte[] data)
@@ -205,8 +206,8 @@ namespace AtelierXNA
 
             Protocoles p;
 
-            try
-            {
+            //try
+            //{
                 p = (Protocoles)reader.ReadByte();
 
                 if (p == Protocoles.Connected)
@@ -218,6 +219,7 @@ namespace AtelierXNA
                         enemyConnected = true;
                         enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                         enemy.Initialize();
+                        
                         writeStream.Position = 0;
                         writer.Write((byte)Protocoles.Connected);
                         SendData(GetDataFromMemoryStream(writeStream));
@@ -239,11 +241,11 @@ namespace AtelierXNA
                     string ip = reader.ReadString();
                     enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
                 }
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.Message);
-            }
+            //}
+            //catch (Exception exception)
+            //{
+            //    MessageBox.Show(exception.Message + "2");
+            //}
         }
 
         private byte[] GetDataFromMemoryStream(MemoryStream ms)
