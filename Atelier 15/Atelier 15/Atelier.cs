@@ -39,8 +39,8 @@ namespace AtelierXNA
 
         BinaryReader reader;
 
-        GameplayObject player;
-        GameplayObject ennemy;
+        Maison player;
+        Maison enemy;
 
         //
         public Atelier()
@@ -71,8 +71,7 @@ namespace AtelierXNA
             //
             //joueur 
 
-            player = new GameplayObject();
-
+            player = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
@@ -110,14 +109,12 @@ namespace AtelierXNA
             Services.AddService(typeof(DataPiste), new DataPiste("SplineX.txt", "SplineY.txt"));
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
+            Components.Add(player);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            player.Texture = Content.Load<Texture2D>("PlayerPaper");
-            player.Rotation = MathHelper.ToRadians(-90);
-            player.Position = new Vector2(0 + player.Origin.X, GraphicsDevice.Viewport.Height-player.Texture.Height);
             base.LoadContent();
         }
 
@@ -204,10 +201,7 @@ namespace AtelierXNA
                 {
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
-                    ennemy = new GameplayObject();
-                    ennemy.Rotation = MathHelper.ToRadians(90);
-                    ennemy.Texture = Content.Load<Texture2D>("EnemyPaper");
-                    ennemy.Position = new Vector2(0 + ennemy.Origin.X, +ennemy.Origin.Y);
+                    enemy = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                 }
                 else
                 {
@@ -215,7 +209,7 @@ namespace AtelierXNA
                     {
                         byte id = reader.ReadByte();
                         string ip = reader.ReadString();
-                        ennemy = null;
+                        enemy.nullité = false;
                     }
                 }
             }
@@ -237,16 +231,6 @@ namespace AtelierXNA
         {
             GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
-            GestionSprites.Begin();
-            if(player!= null)
-            {
-                player.Draw(gameTime, GestionSprites);              
-            }
-            if(ennemy!= null)
-            {
-                ennemy.Draw(gameTime, GestionSprites);
-            }
-            GestionSprites.End();
             
         }
     }

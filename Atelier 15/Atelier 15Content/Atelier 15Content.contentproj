@@ -162,12 +162,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnemyPaper.png">
+    <Compile Include="Textures\EnemyPaper.png">
       <Name>EnemyPaper</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="PlayerPaper.png">
+    <Compile Include="Textures\PlayerPaper.png">
       <Name>PlayerPaper</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
