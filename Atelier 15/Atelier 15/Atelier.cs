@@ -81,7 +81,7 @@ namespace AtelierXNA
             Components.Add(CaméraJeu);
             Sections = new List<Section>();
             Components.Add(new Afficheur3D(this));
-            Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
+            //Components.Add(new ArrièrePlanDéroulant(this, "CielÉtoilé", INTERVALLE_MAJ_STANDARD));
             for (int i = 0; i < 2; ++i)
             {
                 for (int j = 0; j < 2; ++j)
