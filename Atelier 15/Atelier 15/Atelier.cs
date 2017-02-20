@@ -211,7 +211,6 @@ namespace AtelierXNA
                     {
                         byte id = reader.ReadByte();
                         string ip = reader.ReadString();
-                        enemy.nullité = false;
                     }
                 }
             }
