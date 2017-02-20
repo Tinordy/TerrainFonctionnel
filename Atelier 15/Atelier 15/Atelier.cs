@@ -115,7 +115,9 @@ namespace AtelierXNA
 
         protected override void LoadContent()
         {
-
+            player.Texture = Content.Load<Texture2D>("PlayerPaper");
+            player.Rotation = MathHelper.ToRadians(-90);
+            player.Position = new Vector2(0 + player.Origin.X, GraphicsDevice.Viewport.Height-player.Texture.Height);
             base.LoadContent();
         }
 
@@ -202,7 +204,10 @@ namespace AtelierXNA
                 {
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
-                    MessageBox.Show(String.Format("Player has connected : {0}   The IP address is: {1}", id,ip));
+                    ennemy = new GameplayObject();
+                    ennemy.Rotation = MathHelper.ToRadians(90);
+                    ennemy.Texture = Content.Load<Texture2D>("EnemyPaper");
+                    ennemy.Position = new Vector2(0 + ennemy.Origin.X, +ennemy.Origin.Y);
                 }
                 else
                 {
@@ -210,7 +215,7 @@ namespace AtelierXNA
                     {
                         byte id = reader.ReadByte();
                         string ip = reader.ReadString();
-                        MessageBox.Show(String.Format("PLayer has disconnected: {0}  The IP address is: {1}",id, ip));
+                        ennemy = null;
                     }
                 }
             }
@@ -231,6 +236,16 @@ namespace AtelierXNA
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            GestionSprites.Begin();
+            if(player!= null)
+            {
+                player.Draw(gameTime, GestionSprites);              
+            }
+            if(ennemy!= null)
+            {
+                ennemy.Draw(gameTime, GestionSprites);
+            }
+            GestionSprites.End();
             base.Draw(gameTime);
         }
     }
