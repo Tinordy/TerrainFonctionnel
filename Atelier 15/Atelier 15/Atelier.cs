@@ -202,6 +202,7 @@ namespace AtelierXNA
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
                     enemy = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
+                    Components.Add(enemy);
                 }
                 else
                 {
