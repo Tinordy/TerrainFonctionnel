@@ -110,7 +110,7 @@ namespace AtelierXNA
             GestionSprites = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), GestionSprites);
             Components.Add(player);
-            player.nullité = false;
+            player.Enabled = false;
             base.Initialize();
         }
 
@@ -203,7 +203,7 @@ namespace AtelierXNA
                     MessageBox.Show("Player connected");
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
-                    enemy = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
+                    enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0,0,5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                     Components.Add(enemy);
                 }
                 else
