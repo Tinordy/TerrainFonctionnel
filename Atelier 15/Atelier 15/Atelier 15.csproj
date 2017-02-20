@@ -127,6 +127,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Protocoles.cs" />
     <Compile Include="Section.cs" />
+    <Compile Include="Sphère.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteAnimé.cs" />
     <Compile Include="Terrain.cs" />
   </ItemGroup>
   <ItemGroup>

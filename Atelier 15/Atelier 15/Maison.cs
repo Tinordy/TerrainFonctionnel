@@ -131,5 +131,12 @@ namespace AtelierXNA
             //EffetDeBase.Texture = TextureMurs;
             GestionAlpha = BlendState.AlphaBlend;
         }
+
+        public override void Update(GameTime gameTime)
+        {
+
+            base.Update(gameTime);
+        }
     }
+    
 }
