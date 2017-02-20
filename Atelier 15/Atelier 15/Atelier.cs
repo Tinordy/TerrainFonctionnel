@@ -205,15 +205,14 @@ namespace AtelierXNA
                     MessageBox.Show("Player connected");
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
-                    if (enemy == null)
-                    {
+                    
                         enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                         Components.Add(enemy);
 
                         writeStream.Position = 0;
                         writer.Write((byte)Protocoles.Connected);
                         SendData(GetDataFromMemoryStream(writeStream));
-                    }
+                    
 
                 }
                 else
