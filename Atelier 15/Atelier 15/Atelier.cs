@@ -236,6 +236,7 @@ namespace AtelierXNA
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            base.Draw(gameTime);
             GestionSprites.Begin();
             if(player!= null)
             {
@@ -246,7 +247,7 @@ namespace AtelierXNA
                 ennemy.Draw(gameTime, GestionSprites);
             }
             GestionSprites.End();
-            base.Draw(gameTime);
+            
         }
     }
 }
