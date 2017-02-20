@@ -118,6 +118,7 @@
     <Compile Include="Atelier.cs" />
     <Compile Include="DataPiste.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="GameplayObject.cs" />
     <Compile Include="Maison.cs" />
     <Compile Include="Piste.cs" />
     <Compile Include="PrimitiveDeBase.cs" />

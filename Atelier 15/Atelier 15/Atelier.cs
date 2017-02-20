@@ -170,7 +170,7 @@ namespace AtelierXNA
             byte[] data = new byte[bytesRead];
 
             for (int cpt = 0; cpt < bytesRead; cpt++)
-                data[cpt] = readBuffer[1];
+                data[cpt] = readBuffer[cpt];
 
             ProcessData(data);
             
@@ -190,6 +190,22 @@ namespace AtelierXNA
             try
             {
                 p = (Protocoles)reader.ReadByte();
+
+                if (p == Protocoles.Connected)
+                {
+                    byte id = reader.ReadByte();
+                    string ip = reader.ReadString();
+                    MessageBox.Show(String.Format("Player has connected : {0}   The IP address is: {1}", id,ip));
+                }
+                else
+                {
+                    if (p == Protocoles.Disconnected)
+                    {
+                        byte id = reader.ReadByte();
+                        string ip = reader.ReadString();
+                        MessageBox.Show(String.Format("PLayer has disconnected: {0}  The IP address is: {1}",id, ip));
+                    }
+                }
             }
             catch(Exception exception)
             {
@@ -199,7 +215,7 @@ namespace AtelierXNA
 
         private void GérerClavier()
         {
-            if (GestionInput.EstEnfoncée(Keys.Escape))
+            if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 Exit();
             }
