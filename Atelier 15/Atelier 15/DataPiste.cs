@@ -12,11 +12,12 @@ namespace AtelierXNA
         const int NB_COEFFICIENTS_PAR_LIGNE = 4;
         const int NB_PTS_INTERMÉDIAIRES = 34;
         const int INTERVALLE_POINTS_PATROUILLE = 5;
-        const float LARGEUR_PISTE = 50;
+        const float LARGEUR_PISTE = 10;
         const string CHEMIN = "../../../";
         const char ESPACE = ' ';
         const char TAB = '\t';
-        const float ÉCHELLE = 20000 / 8;
+        const float ÉCHELLE = 2;
+        const int LARGEUR_POINTILLÉ = 1;
 
         List<float[]> CoefficientsX { get; set; }
         List<float[]> CoefficientsY { get; set; }
@@ -114,6 +115,11 @@ namespace AtelierXNA
                 PointsBordureExt.Add(PointsCentraux[cpt] + new Vector2(-vDirecteur.Y, vDirecteur.X));
                 PointsBordureInt.Add(PointsCentraux[cpt] + new Vector2(vDirecteur.Y, -vDirecteur.X));
             }
+        }
+
+        public List<Vector2> GetPointsCentraux()
+        {
+            return CopierListeVecteur2(PointsCentraux);
         }
 
         public List<Vector2> GetBordureExtérieure()
