@@ -7,7 +7,7 @@ namespace AtelierXNA
    public abstract class PrimitiveDeBaseAnimée : PrimitiveDeBase
    {
       float Homothétie { get; set; }
-      Vector3 Position { get; set; }
+      public Vector3 Position { get; set; }
       protected float IntervalleMAJ { get; private set; }
       protected InputManager GestionInput { get; private set; }
       float TempsÉcouléDepuisMAJ { get; set; }
