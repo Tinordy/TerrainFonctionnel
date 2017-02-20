@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.Net.Sockets;
+using System.Net;
 
 namespace AtelierXNA
 {
@@ -23,6 +25,9 @@ namespace AtelierXNA
         //DataPiste DonnéesPiste { get; set; }
         List<Section> ListeSections { get; set; }
         float TempsÉcouléDepuisMAJ { get; set; }
+        TcpClient client;
+        string IP = "127.0.0.1";
+        int PORT = 5001;
 
         public Atelier()
         {
@@ -31,6 +36,7 @@ namespace AtelierXNA
             PériphériqueGraphique.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
             IsMouseVisible = true;
+            
         }
 
         protected override void Initialize()
@@ -38,6 +44,14 @@ namespace AtelierXNA
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
+
+            //serveur 
+
+            client = new TcpClient();
+            client.NoDelay = true;
+            client.Connect(IP, PORT);
+
+            //
 
             GestionInput = new InputManager(this);
             Components.Add(GestionInput);
