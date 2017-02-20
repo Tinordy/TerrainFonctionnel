@@ -31,7 +31,7 @@ namespace AtelierXNA
 
         // server related properties
 
-        string IP = "172.17.106.122";
+        string IP = "192.168.0.117";
         int PORT = 5001;
         int BUFFER_SIZE = 2048;
         byte[] readBuffer;
@@ -43,6 +43,8 @@ namespace AtelierXNA
         Maison player;
         Maison enemy;
 
+        bool enemyConnected = false;
+
         //
         public Atelier()
         {
@@ -51,19 +53,14 @@ namespace AtelierXNA
             PériphériqueGraphique.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
             IsMouseVisible = true;
-            
+
         }
 
         protected override void Initialize()
         {
             //serveur 
 
-            client = new TcpClient();
-            client.NoDelay = true;
-            client.Connect(IP, PORT);
 
-            readBuffer = new byte[BUFFER_SIZE];
-            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
 
             readStream = new MemoryStream();
             writeStream = new MemoryStream();
@@ -73,7 +70,7 @@ namespace AtelierXNA
 
             //
             //joueur 
-
+            enemy = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD);
             player = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
@@ -118,40 +115,48 @@ namespace AtelierXNA
 
         protected override void LoadContent()
         {
+            client = new TcpClient();
+            client.NoDelay = true;
+            client.Connect(IP, PORT);
+
+            readBuffer = new byte[BUFFER_SIZE];
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
             base.LoadContent();
+        }
+
+        void UpdateLan(GameTime gameTime)
+        {
+            Vector3 iPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z);
+            base.Update(gameTime);
+            Vector3 nPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z);
+            Vector3 delta = Vector3.Subtract(nPosition, iPosition);
+
+            if (delta != Vector3.Zero)
+            {
+                writeStream.Position = 0;
+                writer.Write((byte)Protocoles.PlayerMoved);
+                writer.Write(delta.X);
+                writer.Write(delta.Y);
+                writer.Write(delta.Z);
+                SendData(GetDataFromMemoryStream(writeStream));
+
+
+            }
         }
 
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
+            enemy.Update(gameTime);
             GérerClavier();
+            UpdateLan(gameTime);
             float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
             TempsÉcouléDepuisMAJ += TempsÉcoulé;
             if (TempsÉcouléDepuisMAJ >= INTERVALLE_MAJ_STANDARD)
             {
-                foreach (Section s in Sections)
-                {
-                    BoundingFrustum boundFrustum = new BoundingFrustum(Matrix.Multiply(CaméraJeu.Vue,CaméraJeu.Projection));
-                    if (CaméraJeu.Frustum.Intersects(s.SphereDeCollision))
-                    {
-                        if (CaméraJeu.Position.X - s.SphereDeCollision.Center.X < 20f || CaméraJeu.Position.Z 
-                            -s.SphereDeCollision.Center.Z < 20f)
-                        {
-                            s.EstVisible = true;
-                        }
-                        else
-                        {
-                            s.EstVisible = false;
-                        }
-                    }
-                    else
-                    {
-                        s.EstVisible = false;
-                    }
-                }
+
                 TempsÉcouléDepuisMAJ = 0;
             }
-            
+
         }
 
         void StreamReceived(IAsyncResult ar)
@@ -160,7 +165,7 @@ namespace AtelierXNA
 
             try
             {
-                lock(client.GetStream())
+                lock (client.GetStream())
                 {
                     bytesRead = client.GetStream().EndRead(ar);
                 }
@@ -170,7 +175,7 @@ namespace AtelierXNA
                 MessageBox.Show(ex.Message);
             }
 
-            if(bytesRead == 0)
+            if (bytesRead == 0)
             {
                 client.Close();
                 return;
@@ -182,7 +187,7 @@ namespace AtelierXNA
                 data[cpt] = readBuffer[cpt];
 
             ProcessData(data);
-            
+
 
             client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
         }
@@ -205,26 +210,34 @@ namespace AtelierXNA
                     MessageBox.Show("Player connected");
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
-                    
+                    if (!enemyConnected)
+                    {
+                        enemyConnected = true;
                         enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
-                        Components.Add(enemy);
-
+                        enemy.Initialize();
                         writeStream.Position = 0;
                         writer.Write((byte)Protocoles.Connected);
                         SendData(GetDataFromMemoryStream(writeStream));
-                    
+                    }
 
                 }
-                else
+                else if(p == Protocoles.Disconnected)
                 {
-                    if (p == Protocoles.Disconnected)
-                    {
-                        byte id = reader.ReadByte();
-                        string ip = reader.ReadString();
-                    }
+                    byte id = reader.ReadByte();
+                    string ip = reader.ReadString();
+                    enemyConnected = false;
+                }
+                else if(p == Protocoles.PlayerMoved)
+                {
+                    float X = reader.ReadSingle();
+                    float Y = reader.ReadSingle();
+                    float Z = reader.ReadSingle();
+                    byte id = reader.ReadByte();
+                    string ip = reader.ReadString();
+                    enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 MessageBox.Show(exception.Message);
             }
@@ -256,7 +269,7 @@ namespace AtelierXNA
             }
             catch (Exception e)
             {
-                
+
             }
         }
         private void GérerClavier()
@@ -271,7 +284,8 @@ namespace AtelierXNA
         {
             GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
-            
+            if (enemyConnected) enemy.Draw(gameTime);
+
         }
     }
 }

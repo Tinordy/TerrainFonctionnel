@@ -29,7 +29,10 @@ namespace AtelierXNA
         RessourcesManager<Texture2D> gestionnaireDeTextures;
         protected BasicEffect EffetDeBase { get; private set; }
         public bool nullité { get; set; }
-        InputManager GestionInput { get; set; }
+
+        //constructeur vide pour créer un objet "inexistant"
+        public Maison(Game jeu, float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, float intervalleMAJ)
+            :base (jeu, homothétieInitiale, rotationInitiale, positionInitiale, intervalleMAJ) { Enabled = false; }
 
         public Maison(Game jeu, float échelleInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue, string nomTextureMurs, string nomTextureToit, float intervalleMAJ)
     : base(jeu, échelleInitiale, rotationInitiale, positionInitiale, intervalleMAJ)
@@ -56,7 +59,6 @@ namespace AtelierXNA
             TextureMurs = gestionnaireDeTextures.Find(NomTextureMurs);
             TextureToit = gestionnaireDeTextures.Find(NomTextureToit);
             InitialiserParamètresEffetDeBase();
-            GestionInput = Game.Services.GetService(typeof(InputManager)) as InputManager;
             base.LoadContent();
         }
 
