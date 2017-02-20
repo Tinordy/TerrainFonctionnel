@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System.Net.Sockets;
 using System.Net;
+using System.IO;
 
 namespace AtelierXNA
 {
@@ -26,9 +27,18 @@ namespace AtelierXNA
         List<Section> ListeSections { get; set; }
         float TempsÉcouléDepuisMAJ { get; set; }
         TcpClient client;
+
+        // server related properties
+
         string IP = "127.0.0.1";
         int PORT = 5001;
+        int BUFFER_SIZE = 2048;
+        byte[] readBuffer;
+        MemoryStream readStream;
 
+        BinaryReader reader;
+
+        //
         public Atelier()
         {
             PériphériqueGraphique = new GraphicsDeviceManager(this);
@@ -41,18 +51,23 @@ namespace AtelierXNA
 
         protected override void Initialize()
         {
-            Vector3 positionCaméra = new Vector3(200, 10, 200);
-            Vector3 cibleCaméra = new Vector3(10, 0, 10);
-            ListeSections = new List<Section>();
-
             //serveur 
 
             client = new TcpClient();
             client.NoDelay = true;
             client.Connect(IP, PORT);
 
-            //
+            readBuffer = new byte[BUFFER_SIZE];
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
 
+            readStream = new MemoryStream();
+
+            reader = new BinaryReader(readStream);
+
+            //
+            Vector3 positionCaméra = new Vector3(200, 10, 200);
+            Vector3 cibleCaméra = new Vector3(10, 0, 10);
+            ListeSections = new List<Section>();
             GestionInput = new InputManager(this);
             Components.Add(GestionInput);
             CaméraJeu = new CaméraSubjective(this, positionCaméra, cibleCaméra, Vector3.Up, INTERVALLE_MAJ_STANDARD);
@@ -90,6 +105,12 @@ namespace AtelierXNA
             base.Initialize();
         }
 
+        protected override void LoadContent()
+        {
+
+            base.LoadContent();
+        }
+
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -121,6 +142,18 @@ namespace AtelierXNA
                 TempsÉcouléDepuisMAJ = 0;
             }
             
+        }
+
+        void StreamReceived(IAsyncResult ar)
+        {
+            int bytesRead = 0;
+
+            try
+            {
+
+            }
+
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
         }
 
         private void GérerClavier()
