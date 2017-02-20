@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using System.Windows.Forms;
 
 namespace AtelierXNA
 {
@@ -150,10 +151,50 @@ namespace AtelierXNA
 
             try
             {
-
+                lock(client.GetStream())
+                {
+                    bytesRead = client.GetStream().EndRead(ar);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
 
+            if(bytesRead == 0)
+            {
+                client.Close();
+                return;
+            }
+
+            byte[] data = new byte[bytesRead];
+
+            for (int cpt = 0; cpt < bytesRead; cpt++)
+                data[cpt] = readBuffer[1];
+
+            ProcessData(data);
+            
+
             client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+        }
+
+        private void ProcessData(byte[] data)
+        {
+            readStream.SetLength(0);
+            readStream.Position = 0;
+            readStream.Write(data, 0, data.Length);
+            readStream.Position = 0;
+
+            Protocoles p;
+
+            try
+            {
+                p = (Protocoles)reader.ReadByte();
+            }
+            catch(Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
 
         private void GérerClavier()
