@@ -58,6 +58,8 @@ namespace AtelierXNA
 
         protected override void Initialize()
         {
+            GestionInput = new InputManager(this);
+            Services.AddService(typeof(InputManager), GestionInput);
             //serveur 
 
 
@@ -75,7 +77,7 @@ namespace AtelierXNA
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
-            GestionInput = new InputManager(this);
+            
             Components.Add(GestionInput);
             CaméraJeu = new CaméraSubjective(this, positionCaméra, cibleCaméra, Vector3.Up, INTERVALLE_MAJ_STANDARD);
             Components.Add(CaméraJeu);
@@ -104,7 +106,6 @@ namespace AtelierXNA
             //Services.AddService(typeof(Random), new Random());
             Services.AddService(typeof(RessourcesManager<SpriteFont>), new RessourcesManager<SpriteFont>(this, "Fonts"));
             Services.AddService(typeof(RessourcesManager<Texture2D>), new RessourcesManager<Texture2D>(this, "Textures"));
-            Services.AddService(typeof(InputManager), GestionInput);
             Services.AddService(typeof(Caméra), CaméraJeu);
             Services.AddService(typeof(DataPiste), new DataPiste("SplineX.txt", "SplineY.txt"));
             GestionSprites = new SpriteBatch(GraphicsDevice);
@@ -146,7 +147,10 @@ namespace AtelierXNA
 
         protected override void Update(GameTime gameTime)
         {
-            enemy.Update(gameTime);
+            if(enemyConnected)
+            {
+                enemy.Update(gameTime);
+            }            
             GérerClavier();
             UpdateLan(gameTime);
             float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -207,7 +211,6 @@ namespace AtelierXNA
 
                 if (p == Protocoles.Connected)
                 {
-                    MessageBox.Show("Player connected");
                     byte id = reader.ReadByte();
                     string ip = reader.ReadString();
                     if (!enemyConnected)
