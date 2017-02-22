@@ -31,7 +31,7 @@ namespace AtelierXNA
 
         // server related properties
 
-        string IP = "192.168.0.117";
+        string IP = "127.0.0.1";
         int PORT = 5001;
         int BUFFER_SIZE = 2048;
         byte[] readBuffer;
@@ -139,6 +139,7 @@ namespace AtelierXNA
 
             if (delta != Vector3.Zero)
             {
+                player.Position = nPosition;
                 player.CalculerMatriceMonde();
                 writeStream.Position = 0;
                 writer.Write((byte)Protocoles.PlayerMoved);
@@ -155,6 +156,7 @@ namespace AtelierXNA
         {
             GérerClavier();
             UpdateLan(gameTime);
+            base.Update(gameTime);
         }
 
         void StreamReceived(IAsyncResult ar)
@@ -231,8 +233,8 @@ namespace AtelierXNA
                 float X = reader.ReadSingle();
                 float Y = reader.ReadSingle();
                 float Z = reader.ReadSingle();
-                byte id = reader.ReadByte();
-                string ip = reader.ReadString();
+                //byte id = reader.ReadByte();
+                //string ip = reader.ReadString();
                 enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
                 enemy.CalculerMatriceMonde();
                 
