@@ -129,12 +129,17 @@ namespace AtelierXNA
         void UpdateLan(GameTime gameTime)
         {
             Vector3 iPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z);
-            base.Update(gameTime);
-            Vector3 nPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z);
+            Vector3 nPosition = iPosition;
+            if(GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.W))
+            {
+                nPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z + 0.01f);
+            }
+            
             Vector3 delta = Vector3.Subtract(nPosition, iPosition);
 
             if (delta != Vector3.Zero)
             {
+                player.CalculerMatriceMonde();
                 writeStream.Position = 0;
                 writer.Write((byte)Protocoles.PlayerMoved);
                 writer.Write(delta.X);
@@ -150,14 +155,6 @@ namespace AtelierXNA
         {
             GérerClavier();
             UpdateLan(gameTime);
-            float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            TempsÉcouléDepuisMAJ += TempsÉcoulé;
-            if (TempsÉcouléDepuisMAJ >= INTERVALLE_MAJ_STANDARD)
-            {
-
-                TempsÉcouléDepuisMAJ = 0;
-            }
-
         }
 
         void StreamReceived(IAsyncResult ar)
@@ -190,7 +187,7 @@ namespace AtelierXNA
             ProcessData(data);
 
 
-            //client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
         }
 
         private void ProcessData(byte[] data)
@@ -288,8 +285,6 @@ namespace AtelierXNA
         {
             GraphicsDevice.Clear(Color.Black);
             base.Draw(gameTime);
-            if (enemyConnected) enemy.Draw(gameTime);
-
         }
     }
 }

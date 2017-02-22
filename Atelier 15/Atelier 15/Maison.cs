@@ -135,18 +135,6 @@ namespace AtelierXNA
             //EffetDeBase.Texture = TextureMurs;
             GestionAlpha = BlendState.AlphaBlend;
         }
-
-        public override void Update(GameTime gameTime)
-        {
-            int x = 0;
-            if (GestionInput.EstNouvelleTouche(Microsoft.Xna.Framework.Input.Keys.W))
-            {
-                x = 10;
-            }
-            Position = new Vector3(Position.X, Position.Y, Position.Z + x);
-            CalculerMatriceMonde();
-            base.Update(gameTime);
-        }
     }
 
 }
