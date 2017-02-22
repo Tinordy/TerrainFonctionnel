@@ -206,11 +206,11 @@ namespace AtelierXNA
             p = (Protocoles)reader.ReadByte();
 
             if (p == Protocoles.Connected)
-            {
-                byte id = reader.ReadByte();
-                string ip = reader.ReadString();
+            {             
                 if (!enemyConnected)
                 {
+                    byte id = reader.ReadByte();
+                    string ip = reader.ReadString();
                     enemyConnected = true;
                     enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
                     Components.Add(enemy);
