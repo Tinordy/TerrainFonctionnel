@@ -80,7 +80,7 @@ namespace AtelierXNA
          base.Initialize();
       }
 
-      protected override void CalculerMatriceMonde()
+      public override void CalculerMatriceMonde()
       {
          Monde = Matrix.Identity *
                  Matrix.CreateScale(Homothétie) *

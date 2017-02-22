@@ -77,7 +77,7 @@ namespace AtelierXNA
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
-            
+
             Components.Add(GestionInput);
             CaméraJeu = new CaméraSubjective(this, positionCaméra, cibleCaméra, Vector3.Up, INTERVALLE_MAJ_STANDARD);
             Components.Add(CaméraJeu);
@@ -123,7 +123,7 @@ namespace AtelierXNA
 
             readBuffer = new byte[BUFFER_SIZE];
             client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
-            
+
         }
 
         void UpdateLan(GameTime gameTime)
@@ -148,10 +148,6 @@ namespace AtelierXNA
 
         protected override void Update(GameTime gameTime)
         {
-            if(enemyConnected)
-            {
-                enemy.Update(gameTime);
-            }            
             GérerClavier();
             UpdateLan(gameTime);
             float TempsÉcoulé = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -208,39 +204,42 @@ namespace AtelierXNA
 
             //try
             //{
-                p = (Protocoles)reader.ReadByte();
+            p = (Protocoles)reader.ReadByte();
 
-                if (p == Protocoles.Connected)
+            if (p == Protocoles.Connected)
+            {
+                byte id = reader.ReadByte();
+                string ip = reader.ReadString();
+                if (!enemyConnected)
                 {
-                    byte id = reader.ReadByte();
-                    string ip = reader.ReadString();
-                    if (!enemyConnected)
-                    {
-                        enemyConnected = true;
-                        enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
-                        enemy.Initialize();
-                        
-                        writeStream.Position = 0;
-                        writer.Write((byte)Protocoles.Connected);
-                        SendData(GetDataFromMemoryStream(writeStream));
-                    }
+                    enemyConnected = true;
+                    enemy = new Maison(this, 1f, Vector3.Zero, new Vector3(0, 0, 5), new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
+                    Components.Add(enemy);
+                    
 
+                    writeStream.Position = 0;
+                    writer.Write((byte)Protocoles.Connected);
+                    SendData(GetDataFromMemoryStream(writeStream));
                 }
-                else if(p == Protocoles.Disconnected)
-                {
-                    byte id = reader.ReadByte();
-                    string ip = reader.ReadString();
-                    enemyConnected = false;
-                }
-                else if(p == Protocoles.PlayerMoved)
-                {
-                    float X = reader.ReadSingle();
-                    float Y = reader.ReadSingle();
-                    float Z = reader.ReadSingle();
-                    byte id = reader.ReadByte();
-                    string ip = reader.ReadString();
-                    enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
-                }
+
+            }
+            else if (p == Protocoles.Disconnected)
+            {
+                byte id = reader.ReadByte();
+                string ip = reader.ReadString();
+                enemyConnected = false;
+            }
+            else if (p == Protocoles.PlayerMoved)
+            {
+                float X = reader.ReadSingle();
+                float Y = reader.ReadSingle();
+                float Z = reader.ReadSingle();
+                byte id = reader.ReadByte();
+                string ip = reader.ReadString();
+                enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
+                enemy.CalculerMatriceMonde();
+                
+            }
             //}
             //catch (Exception exception)
             //{

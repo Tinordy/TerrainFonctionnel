@@ -35,7 +35,7 @@ namespace AtelierXNA
          base.LoadContent();
       }
 
-      protected virtual void CalculerMatriceMonde()
+      public virtual void CalculerMatriceMonde()
       {
          Monde = Matrix.Identity *
                  Matrix.CreateScale(HomothétieInitiale) *

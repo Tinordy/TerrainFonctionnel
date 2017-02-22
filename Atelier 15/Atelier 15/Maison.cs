@@ -33,7 +33,7 @@ namespace AtelierXNA
 
         //constructeur vide pour créer un objet "inexistant"
         public Maison(Game jeu, float homothétieInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, float intervalleMAJ)
-            :base (jeu, homothétieInitiale, rotationInitiale, positionInitiale, intervalleMAJ) { Enabled = false; }
+            : base(jeu, homothétieInitiale, rotationInitiale, positionInitiale, intervalleMAJ) { Enabled = false; }
 
         public Maison(Game jeu, float échelleInitiale, Vector3 rotationInitiale, Vector3 positionInitiale, Vector3 étendue, string nomTextureMurs, string nomTextureToit, float intervalleMAJ)
     : base(jeu, échelleInitiale, rotationInitiale, positionInitiale, intervalleMAJ)
@@ -49,7 +49,6 @@ namespace AtelierXNA
             NbSommetsMurs = NB_TRIANGLES_MURS + 2;
             NbSommetsToit = NB_TRIANGLES_TOIT * NB_SOMMETS_PAR_TRIANGLE;
             CréerTableauSommets();
-            nullité = true;
             base.Initialize();
         }
 
@@ -66,25 +65,19 @@ namespace AtelierXNA
 
         public override void Draw(GameTime gameTime)
         {
-            if (nullité == true)
+            EffetDeBase.World = GetMonde();
+            EffetDeBase.View = CaméraJeu.Vue;
+            EffetDeBase.Projection = CaméraJeu.Projection;
+            foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
             {
-                BlendState oldBlendState = GraphicsDevice.BlendState;
-                GraphicsDevice.BlendState = GestionAlpha;
-                EffetDeBase.World = GetMonde();
-                EffetDeBase.View = CaméraJeu.Vue;
-                EffetDeBase.Projection = CaméraJeu.Projection;
-                foreach (EffectPass passeEffet in EffetDeBase.CurrentTechnique.Passes)
-                {
-                    EffetDeBase.Texture = TextureMurs;
-                    passeEffet.Apply();
-                    GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleStrip, SommetsMurs, 0, NB_TRIANGLES_MURS);
-                    EffetDeBase.Texture = TextureToit;
-                    passeEffet.Apply();
-                    GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, SommetsToit, 0, NB_TRIANGLES_TOIT);
-                }
-                base.Draw(gameTime);
-                GraphicsDevice.BlendState = oldBlendState;
+                EffetDeBase.Texture = TextureMurs;
+                passeEffet.Apply();
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleStrip, SommetsMurs, 0, NB_TRIANGLES_MURS);
+                EffetDeBase.Texture = TextureToit;
+                passeEffet.Apply();
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, SommetsToit, 0, NB_TRIANGLES_TOIT);
             }
+            base.Draw(gameTime);
         }
         private void CréerTableauSommets()
         {
@@ -119,23 +112,23 @@ namespace AtelierXNA
             }
             i = 0;
 
-         //sommets toit
-         SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureMurs[i % 3]);
-         i++;
-         while (i < NbSommetsToit)
-         {
-            if ((i - 1) % 3 == 0)
-            {
-               SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
-            }
-            else
-            {
-               SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + (1-(i/8)) * Étendue.X, Origine.Y + Étendue.Y, Origine.Z - ((i/5)%2) * Étendue.Z), PtsTextureToit[i % 3]);
-
-            }
+            //sommets toit
+            SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X, Origine.Y + Étendue.Y, Origine.Z), PtsTextureMurs[i % 3]);
             i++;
-         }
-      }
+            while (i < NbSommetsToit)
+            {
+                if ((i - 1) % 3 == 0)
+                {
+                    SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + Étendue.X / 2, Origine.Y + 3f / 2 * Étendue.Y, Origine.Z - Étendue.Z / 2), PtsTextureToit[i % 3]);
+                }
+                else
+                {
+                    SommetsToit[i] = new VertexPositionTexture(new Vector3(Origine.X + (1 - (i / 8)) * Étendue.X, Origine.Y + Étendue.Y, Origine.Z - ((i / 5) % 2) * Étendue.Z), PtsTextureToit[i % 3]);
+
+                }
+                i++;
+            }
+        }
         private void InitialiserParamètresEffetDeBase()
         {
             EffetDeBase.TextureEnabled = true;
@@ -146,14 +139,14 @@ namespace AtelierXNA
         public override void Update(GameTime gameTime)
         {
             int x = 0;
-            if(GestionInput.EstNouvelleTouche(Microsoft.Xna.Framework.Input.Keys.W))
+            if (GestionInput.EstNouvelleTouche(Microsoft.Xna.Framework.Input.Keys.W))
             {
-                x = 1;
+                x = 10;
             }
             Position = new Vector3(Position.X, Position.Y, Position.Z + x);
             CalculerMatriceMonde();
             base.Update(gameTime);
         }
     }
-    
+
 }
