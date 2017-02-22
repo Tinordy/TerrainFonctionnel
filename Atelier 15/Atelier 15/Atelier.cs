@@ -117,12 +117,12 @@ namespace AtelierXNA
         protected override void LoadContent()
         {
             base.LoadContent();
-            client = new TcpClient();
-            client.NoDelay = true;
-            client.Connect(IP, PORT);
+            //client = new TcpClient();
+            //client.NoDelay = true;
+            //client.Connect(IP, PORT);
 
-            readBuffer = new byte[BUFFER_SIZE];
-            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+            //readBuffer = new byte[BUFFER_SIZE];
+            //client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
 
         }
 
@@ -141,12 +141,12 @@ namespace AtelierXNA
             {
                 player.Position = nPosition;
                 player.CalculerMatriceMonde();
-                writeStream.Position = 0;
-                writer.Write((byte)Protocoles.PlayerMoved);
-                writer.Write(delta.X);
-                writer.Write(delta.Y);
-                writer.Write(delta.Z);
-                SendData(GetDataFromMemoryStream(writeStream));
+                //writeStream.Position = 0;
+                //writer.Write((byte)Protocoles.PlayerMoved);
+                //writer.Write(delta.X);
+                //writer.Write(delta.Y);
+                //writer.Write(delta.Z);
+                //SendData(GetDataFromMemoryStream(writeStream));
 
 
             }
