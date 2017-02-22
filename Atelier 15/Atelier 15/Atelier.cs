@@ -134,7 +134,20 @@ namespace AtelierXNA
             {
                 nPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z + 0.01f);
             }
-            
+            if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.S))
+            {
+                nPosition = new Vector3(player.Position.X, player.Position.Y, player.Position.Z - 0.01f);
+            }
+            if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.A))
+            {
+                nPosition = new Vector3(player.Position.X + 0.01f, player.Position.Y, player.Position.Z);
+            }
+            if (GestionInput.EstEnfoncée(Microsoft.Xna.Framework.Input.Keys.D))
+            {
+                nPosition = new Vector3(player.Position.X - 0.01f, player.Position.Y, player.Position.Z);
+            }
+
+
             Vector3 delta = Vector3.Subtract(nPosition, iPosition);
 
             if (delta != Vector3.Zero)
