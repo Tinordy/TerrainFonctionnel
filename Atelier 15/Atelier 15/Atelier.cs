@@ -31,7 +31,7 @@ namespace AtelierXNA
 
         // server related properties
 
-        string IP = "172.17.106.122";
+        string IP = "172.17.106.132";
         int PORT = 5001;
         int BUFFER_SIZE = 2048;
         byte[] readBuffer;
@@ -224,8 +224,8 @@ namespace AtelierXNA
             }
             else if (p == Protocoles.Disconnected)
             {
-                byte id = reader.ReadByte();
-                string ip = reader.ReadString();
+                //byte id = reader.ReadByte();
+                //string ip = reader.ReadString();
                 enemyConnected = false;
             }
             else if (p == Protocoles.PlayerMoved)
