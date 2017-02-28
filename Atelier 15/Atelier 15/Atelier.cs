@@ -31,7 +31,7 @@ namespace AtelierXNA
 
         // server related properties
 
-        string IP = "172.17.106.122";
+        string IP = "127.0.0.1";
         int PORT = 5001;
         int BUFFER_SIZE = 2048;
         byte[] readBuffer;
@@ -117,12 +117,12 @@ namespace AtelierXNA
         protected override void LoadContent()
         {
             base.LoadContent();
-            //client = new TcpClient();
-            //client.NoDelay = true;
-            //client.Connect(IP, PORT);
+            client = new TcpClient();
+            client.NoDelay = true;
+            client.Connect(IP, PORT);
 
-            //readBuffer = new byte[BUFFER_SIZE];
-            //client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
+            readBuffer = new byte[BUFFER_SIZE];
+            client.GetStream().BeginRead(readBuffer, 0, BUFFER_SIZE, StreamReceived, null);
 
         }
 
@@ -154,12 +154,12 @@ namespace AtelierXNA
             {
                 player.Position = nPosition;
                 player.CalculerMatriceMonde();
-                //writeStream.Position = 0;
-                //writer.Write((byte)Protocoles.PlayerMoved);
-                //writer.Write(delta.X);
-                //writer.Write(delta.Y);
-                //writer.Write(delta.Z);
-                //SendData(GetDataFromMemoryStream(writeStream));
+                writeStream.Position = 0;
+                writer.Write((byte)Protocoles.PlayerMoved);
+                writer.Write(delta.X);
+                writer.Write(delta.Y);
+                writer.Write(delta.Z);
+                SendData(GetDataFromMemoryStream(writeStream));
 
 
             }
@@ -237,8 +237,8 @@ namespace AtelierXNA
             }
             else if (p == Protocoles.Disconnected)
             {
-                //byte id = reader.ReadByte();
-                //string ip = reader.ReadString();
+                byte id = reader.ReadByte();
+                string ip = reader.ReadString();
                 enemyConnected = false;
             }
             else if (p == Protocoles.PlayerMoved)
@@ -246,8 +246,8 @@ namespace AtelierXNA
                 float X = reader.ReadSingle();
                 float Y = reader.ReadSingle();
                 float Z = reader.ReadSingle();
-                //byte id = reader.ReadByte();
-                //string ip = reader.ReadString();
+                byte id = reader.ReadByte();
+                string ip = reader.ReadString();
                 enemy.Position = new Vector3(enemy.Position.X + X, enemy.Position.Y + Y, enemy.Position.Z + Z);
                 enemy.CalculerMatriceMonde();
                 
