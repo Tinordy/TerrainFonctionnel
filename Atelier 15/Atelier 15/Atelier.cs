@@ -73,7 +73,7 @@ namespace AtelierXNA
             //
             //joueur 
             enemy = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, INTERVALLE_MAJ_STANDARD);
-            player = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "PlayerPaper", "EnemyPaper", INTERVALLE_MAJ_STANDARD);
+            player = new Maison(this, 1f, Vector3.Zero, Vector3.Zero, new Vector3(5f, 5f, 5f), "brique1", "roof", INTERVALLE_MAJ_STANDARD);
             Vector3 positionCaméra = new Vector3(200, 10, 200);
             Vector3 cibleCaméra = new Vector3(10, 0, 10);
             ListeSections = new List<Section>();
